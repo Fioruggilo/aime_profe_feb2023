@@ -1,0 +1,4 @@
+.env
+aime_profe.db
+aime_profe.sqlite
+__pycache__
