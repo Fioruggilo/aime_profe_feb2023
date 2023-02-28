@@ -11,7 +11,8 @@
     <h1 class="text-2xl">Asistencia del dia</h1>
 
     <label for="fecha">Fecha</label>
-    <input type="date" id="fecha" name="fecha" />
+    <input type="date" id="fecha" class="calendar" />
+    <a href="/" class="btn">Seleccionar</a>
 
     <table class="table-auto">
       <thead>
@@ -59,5 +60,31 @@
         checked = true;
       }
     }
+
+    // add current date as default to the input date field
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    const yyyy = today.getFullYear();
+
+    today = dd + "-" + mm + "-" + yyyy;
+    document.getElementById("fecha").value = today;
+
+    // parse the date from the calendar
+    const btn = document.querySelector(".btn");
+    const calendar = document.querySelector(".calendar");
+
+    btn.addEventListener("click", () => {
+      const dateArray = calendar.value.split("-");
+      const dateParsed = dateArray
+        .splice(0, 3, dateArray[2], dateArray[1], dateArray[0])
+        .join("-");
+
+      if (btn.getAttribute("href") == "/") {
+        btn.setAttribute("href", "/asistencias/" + dateParsed);
+      } else {
+        btn.setAttribute("href", btn.getAttribute("href") + dateParsed);
+      }
+    });
   </script>
 </html>
