@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Asistencia</title>
+  </head>
+  <body>
+    <h1 class="text-2xl">Asistencia del dia</h1>
+
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha" class="calendar" />
+    <a href="/" class="btn">Seleccionar</a>
+
+    <form
+      action="/{{ asistencias[0].grado }}/asistencia/{{ asistencias[0].fecha }}"
+      method="post"
+      class="form"
+    >
+      <table class="table-auto">
+        <thead>
+          <tr>
+            <th>APELLIDO</th>
+            <th>NOMBRE</th>
+            <th>GRADO</th>
+            <th>PRESENCIA</th>
+            <th>JUSTIFICATIVO</th>
+            <th>FECHA</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for asistencia in asistencias %}
+          <tr>
+            <td>{{ asistencia.apellido }}</td>
+            <td>{{ asistencia.nombre }}</td>
+            <td id="grado">{{ asistencia.grado }}</td>
+            <!-- if asistencia.asistencia = 1 then the checkbox is gonna be inicially checked -->
+            <td>
+              <input class="asistencia_checkbox" type="checkbox" value="{{
+              asistencia.asistencia }}" {% if asistencia.asistencia == 1 %}
+              checked {% endif %} onclick="changeState(this)" />
+            </td>
+            <td>{{ asistencia.justificativo }}</td>
+            <td>{{ asistencia.fecha }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <input type="hidden" name="table_data" class="table_data" value="" />
+
+      <button class="button bg-blue-600 text-white p-1 rounded-md">
+        Enviar
+      </button>
+    </form>
+  </body>
+
+  <!-- Script javascript -->
+  <script>
+    // changes the value of the checkbox
+    function changeState(element) {
+      // console.log(element.value);
+      // if the value is 1, then it is checked
+      if (element.value == 1) {
+        element.value = 0;
+        checked = false;
+        // if the value is 0, then it is unchecked
+      } else {
+        element.value = 1;
+        checked = true;
+      }
+    }
+
+    // add current date as default to the input date field
+    let today = new Date();
+    console.log(today);
+    const dd = String(today.getDate()).padStart(2, "0");
+    console.log(dd);
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    console.log(mm);
+    const yyyy = today.getFullYear();
+    console.log(yyyy);
+
+    today = mm + "-" + dd + "-" + yyyy;
+    document.getElementById("fecha").value = today;
+    console.log(today);
+
+    // parse the date from the calendar
+    const btn = document.querySelector(".btn");
+    const calendar = document.querySelector(".calendar");
+    const grado = document.getElementById("grado").textContent;
+    console.log(grado);
+
+    btn.addEventListener("click", () => {
+      const dateArray = calendar.value.split("-");
+
+      // parse date in followig format: dd-mm-yyyy
+
+      const dateParsed = dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0];
+
+      console.log("dateParsed:", dateParsed);
+
+      // redirect to the asistencias page with the date selected when the href is clicked
+      btn.setAttribute("href", `/${grado}/asistencia/${dateParsed}`);
+    });
+
+    let form = document.querySelector(".form");
+    let table_data = document.querySelector(".table_data");
+    let asistencia_checkbox = document.querySelectorAll(".asistencia_checkbox"); // checkbox de asistencia con propiedad checked: true/false
+
+    let tabla_obj = {
+      all_rows: [],
+    };
+
+    form.addEventListener("submit", () => {
+      asistencia_checkbox.forEach((checkbox) => {
+        let nombre_de_alumno =
+          checkbox.parentElement.parentElement.children[0].textContent; // Nombre que se encuentra en cada fila
+        console.log(nombre_de_alumno);
+        tabla_obj.all_rows.push([nombre_de_alumno, checkbox.checked]);
+      });
+
+      table_data.setAttribute("value", JSON.stringify(tabla_obj));
+    });
+  </script>
+</html>
