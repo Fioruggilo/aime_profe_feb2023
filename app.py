@@ -1,5 +1,5 @@
 # Once activated the environment, install Flask
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -32,12 +32,20 @@ with app.app_context():
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/<grado>/asistencia/<fecha>')
+@app.route('/<grado>/asistencia/<fecha>', methods=["POST", "GET"])
 def asistencia(grado, fecha):
-    # return data from the database with SQLALchemy and filter by the parameters
-    asistencias = Asistencia.query.filter_by(grado=grado).filter_by(fecha=fecha).all()
-    # print(asistencias)
-    return render_template('asistencias.html', asistencias=asistencias)
+
+    if request.method == 'POST':
+        # Trabajar con el form submit
+        print(request.form)
+        # return redirect('asistencia')
+        return "ok"
+
+    else:
+        # return data from the database with SQLALchemy and filter by the parameters
+        asistencias = Asistencia.query.filter_by(grado=grado).filter_by(fecha=fecha).all()
+        
+        return render_template('asistencias.html', asistencias=asistencias)
 
 #execute breakpoint so the debugger is active
 if __name__ == '__main__':
